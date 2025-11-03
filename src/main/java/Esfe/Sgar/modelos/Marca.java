@@ -28,4 +28,36 @@ public class Marca {
 
     @OneToMany(mappedBy = "marca", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vehiculo> vehiculos;
+
+    public Integer getId() {
+        return id;
+    }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public String getNombre() {
+        return nombre;
+    }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    public String getModelo() {
+        return modelo;
+    }
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+    public String getYearOfFabrication() {
+        return yearOfFabrication;
+    }
+    public void setYearOfFabrication(String yearOfFabrication) {
+        this.yearOfFabrication = yearOfFabrication;
+    }
+    public List<Vehiculo> getVehiculos() {
+        return vehiculos;
+    }
+    public void setVehiculos(List<Vehiculo> vehiculos) {
+        this.vehiculos = vehiculos;
+    }
+    
 }

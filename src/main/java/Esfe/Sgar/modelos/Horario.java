@@ -7,10 +7,6 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "Horarios")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Horario {
 
     @Id
@@ -26,14 +22,54 @@ public class Horario {
     @Column(name = "Dia", length = 7, nullable = false)
     private String dia;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "IdOperador", nullable = false)
-    private Operador operador;
+    private Operador operador;*/
 
     @Column(name = "Turno", nullable = false)
     private Byte turno;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public LocalTime getHoraEntrada() {
+        return horaEntrada;
+    }
+
+    public void setHoraEntrada(LocalTime horaEntrada) {
+        this.horaEntrada = horaEntrada;
+    }
+
+    public LocalTime getHoraSalida() {
+        return horaSalida;
+    }
+
+    public void setHoraSalida(LocalTime horaSalida) {
+        this.horaSalida = horaSalida;
+    }
+
+    public String getDia() {
+        return dia;
+    }
+
+    public void setDia(String dia) {
+        this.dia = dia;
+    }
+
+    public Byte getTurno() {
+        return turno;
+    }
+
+    public void setTurno(Byte turno) {
+        this.turno = turno;
+    }
+
+    /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "IdZona", nullable = false)
-    private Zona zona;
+    private Zona zona;*/
 }

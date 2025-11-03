@@ -25,4 +25,30 @@ public class TipoVehiculo {
 
     @OneToMany(mappedBy = "tipoVehiculo", cascade = CascadeType.ALL)
     private List<Vehiculo> vehiculos;
+
+    public Integer getId() {
+        return id;
+    }
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    public Byte getTipo() {
+        return tipo;
+    }
+    public void setTipo(Byte tipo) {
+        this.tipo = tipo;
+    }
+    public String getDescripcion() {
+        return descripcion;
+    }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    public List<Vehiculo> getVehiculos() {
+        return vehiculos;
+    }
+    public void setVehiculos(List<Vehiculo> vehiculos) {
+        this.vehiculos = vehiculos;
+    }
+    
 }

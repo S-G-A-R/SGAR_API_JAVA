@@ -5,10 +5,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "Vehiculos")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+
 public class Vehiculo {
 
     @Id
@@ -36,9 +33,9 @@ public class Vehiculo {
     private String taller;
 
     // IdOperador FK (optional)
-    @ManyToOne(fetch = FetchType.LAZY)
+    /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "IdOperador")
-    private Operador operador;
+    private Operador operador;*/
 
     @Column(name = "Estado")
     private Byte estado;
@@ -49,4 +46,86 @@ public class Vehiculo {
     @Lob
     @Column(name = "Foto")
     private byte[] foto;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Marca getMarca() {
+        return marca;
+    }
+
+    public void setMarca(Marca marca) {
+        this.marca = marca;
+    }
+
+    public String getPlaca() {
+        return placa;
+    }
+
+    public void setPlaca(String placa) {
+        this.placa = placa;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public TipoVehiculo getTipoVehiculo() {
+        return tipoVehiculo;
+    }
+
+    public void setTipoVehiculo(TipoVehiculo tipoVehiculo) {
+        this.tipoVehiculo = tipoVehiculo;
+    }
+
+    public String getMecanico() {
+        return mecanico;
+    }
+
+    public void setMecanico(String mecanico) {
+        this.mecanico = mecanico;
+    }
+
+    public String getTaller() {
+        return taller;
+    }
+
+    public void setTaller(String taller) {
+        this.taller = taller;
+    }
+
+    public Byte getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Byte estado) {
+        this.estado = estado;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public byte[] getFoto() {
+        return foto;
+    }
+
+    public void setFoto(byte[] foto) {
+        this.foto = foto;
+    }
+
+    
 }

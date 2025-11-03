@@ -5,10 +5,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "Quejas")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Queja {
 
     @Id
@@ -20,10 +16,12 @@ public class Queja {
 
     @Column(name = "Descripcion", columnDefinition = "TEXT")
     private String descripcion;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "IdCiudadano", nullable = false)
-    private Ciudadano ciudadano;
+    /*
+     * @ManyToOne(fetch = FetchType.LAZY)
+     * 
+     * @JoinColumn(name = "IdCiudadano", nullable = false)
+     * private Ciudadano ciudadano;
+     */
 
     @Lob
     @Column(name = "Archivo")
@@ -37,4 +35,61 @@ public class Queja {
 
     @Column(name = "Motivo", length = 255)
     private String motivo;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public byte[] getArchivo() {
+        return archivo;
+    }
+
+    public void setArchivo(byte[] archivo) {
+        this.archivo = archivo;
+    }
+
+    public String getTipoSituacion() {
+        return tipoSituacion;
+    }
+
+    public void setTipoSituacion(String tipoSituacion) {
+        this.tipoSituacion = tipoSituacion;
+    }
+
+    public Byte getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Byte estado) {
+        this.estado = estado;
+    }
+
+    public String getMotivo() {
+        return motivo;
+    }
+
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
+    }
+    
 }
