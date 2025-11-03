@@ -22,9 +22,8 @@ public class Horario {
     @Column(name = "Dia", length = 7, nullable = false)
     private String dia;
 
-    /*@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "IdOperador", nullable = false)
-    private Operador operador;*/
+    @Column(name = "IdOperador", nullable = false)
+    private Integer operadorId;
 
     @Column(name = "Turno", nullable = false)
     private Byte turno;
