@@ -1,7 +1,6 @@
 package Esfe.Sgar.modelos;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "Quejas")
@@ -14,14 +13,12 @@ public class Queja {
     @Column(name = "Titulo", length = 80, nullable = false)
     private String titulo;
 
-    @Column(name = "Descripcion", columnDefinition = "TEXT")
+    @Column(name = "Descripcion", columnDefinition = "TEXT", length = 250)
     private String descripcion;
-    /*
-     * @ManyToOne(fetch = FetchType.LAZY)
-     * 
-     * @JoinColumn(name = "IdCiudadano", nullable = false)
-     * private Ciudadano ciudadano;
-     */
+   
+    @Column(name = "CiudadanoId", nullable = false)
+    private Integer ciudadano;
+     
 
     @Lob
     @Column(name = "Archivo")

@@ -4,8 +4,6 @@ import Esfe.Sgar.modelos.Queja;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,7 +12,7 @@ import java.util.List;
 public interface QuejaRepository extends JpaRepository<Queja, Integer> {
     
     // Buscar por ciudadano
-    List<Queja> findByCiudadanoId(Integer ciudadanoId);
+    List<Queja> findByCiudadano(Integer ciudadano);
     
     // Buscar por estado
     List<Queja> findByEstado(Byte estado);
@@ -26,8 +24,11 @@ public interface QuejaRepository extends JpaRepository<Queja, Integer> {
     List<Queja> findByTituloContainingIgnoreCase(String titulo);
     
     // Buscar quejas por ciudadano y estado (paginado)
-    Page<Queja> findByCiudadanoIdAndEstado(Integer ciudadanoId, Byte estado, Pageable pageable);
+    Page<Queja> findByCiudadanoAndEstado(Integer ciudadano, Byte estado, Pageable pageable);
     
+    // Por el momento, no podemos buscar por zona ya que no tenemos la relación entre ciudadano y zona
+    // estas consultas se han comentado hasta que implementemos la relación adecuada
+    /*
     // Buscar quejas por zona
     @Query("SELECT q FROM Queja q WHERE q.ciudadano.zona.id = :zonaId")
     List<Queja> findByZonaId(@Param("zonaId") Integer zonaId);
@@ -39,4 +40,5 @@ public interface QuejaRepository extends JpaRepository<Queja, Integer> {
     // Buscar quejas sin resolver por zona
     @Query("SELECT q FROM Queja q WHERE q.ciudadano.zona.id = :zonaId AND q.estado IN (0, 1)")
     List<Queja> findPendientesByZonaId(@Param("zonaId") Integer zonaId);
+    */
 }

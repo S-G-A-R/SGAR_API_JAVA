@@ -1,8 +1,5 @@
 package Esfe.Sgar.modelos;
-
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalTime;
 
 @Entity
@@ -22,11 +19,14 @@ public class Horario {
     @Column(name = "Dia", length = 7, nullable = false)
     private String dia;
 
-    @Column(name = "IdOperador", nullable = false)
-    private Integer operadorId;
+    @Column(name = "IdOrganizacion", nullable = false)
+    private Integer IdOrganizacion;
 
     @Column(name = "Turno", nullable = false)
     private Byte turno;
+
+    @Column(name = "ZonaId", nullable = false)
+    private Integer zonaId;
 
     public Integer getId() {
         return id;
@@ -68,7 +68,19 @@ public class Horario {
         this.turno = turno;
     }
 
-    /*@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "IdZona", nullable = false)
-    private Zona zona;*/
+   
+    public Integer getZonaId() {
+        return zonaId;
+    }
+    public void setZonaId(Integer zonaId) {
+        this.zonaId = zonaId;
+    }
+
+	public Integer getIdOrganizacion() {
+		return IdOrganizacion;
+	}
+
+	public void setIdOrganizacion(Integer idOrganizacion) {
+		IdOrganizacion = idOrganizacion;
+	}
 }

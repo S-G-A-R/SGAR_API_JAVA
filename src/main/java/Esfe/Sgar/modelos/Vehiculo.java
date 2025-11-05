@@ -1,7 +1,6 @@
 package Esfe.Sgar.modelos;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "Vehiculos")
@@ -32,10 +31,9 @@ public class Vehiculo {
     @Column(name = "Taller", length = 120)
     private String taller;
 
-    // IdOperador FK (optional)
-    /*@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "IdOperador")
-    private Operador operador;*/
+   
+    @Column(name = "OperadorId")
+    private Integer operadorId;
 
     @Column(name = "Estado")
     private Byte estado;
