@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,29 +72,48 @@ public class VehiculoController {
     })
     @PostMapping
     public ResponseEntity<VehiculoSalidaDto> crear(
-        @Parameter(description = "ID de la marca") @RequestParam(required = true) Integer idMarca,
-        @Parameter(description = "Placa del vehículo") @RequestParam(required = true) String placa,
-        @Parameter(description = "Código del vehículo") @RequestParam(required = true) String codigo,
-        @Parameter(description = "ID del tipo de vehículo") @RequestParam(required = true) Integer idTipoVehiculo,
-        @Parameter(description = "Mecánico") @RequestParam(required = true) String mecanico,
-        @Parameter(description = "Taller") @RequestParam(required = true) String taller,
-        @Parameter(description = "ID del operador") @RequestParam(required = false) Integer idOperador,
-        @Parameter(description = "ID de la foto") @RequestParam(required = false) Integer idFoto,
-        @Parameter(description = "Estado (1: Activo, 0: Inactivo)") @RequestParam(required = false) String estado,
-        @Parameter(description = "Descripción") @RequestParam(required = false) String descripcion
+            @Parameter(description = "Datos del vehículo como JSON") 
+            @RequestBody(required = false) VehiculoGuardarDto vehiculoDto,
+            
+            // Form data parameters
+            @Parameter(description = "ID de la marca") 
+            @RequestParam(required = false) Integer idMarca,
+            @Parameter(description = "Placa del vehículo") 
+            @RequestParam(required = false) String placa,
+            @Parameter(description = "Código del vehículo") 
+            @RequestParam(required = false) String codigo,
+            @Parameter(description = "ID del tipo de vehículo") 
+            @RequestParam(required = false) Integer idTipoVehiculo,
+            @Parameter(description = "Mecánico") 
+            @RequestParam(required = false) String mecanico,
+            @Parameter(description = "Taller") 
+            @RequestParam(required = false) String taller,
+            @Parameter(description = "ID del operador") 
+            @RequestParam(required = false) Integer idOperador,
+            @Parameter(description = "ID de la foto") 
+            @RequestParam(required = false) Integer idFoto,
+            @Parameter(description = "Estado") 
+            @RequestParam(required = false) Byte estado,
+            @Parameter(description = "Descripción") 
+            @RequestParam(required = false) String descripcion
     ) {
         try {
-            VehiculoGuardarDto dto = new VehiculoGuardarDto();
-            dto.setIdMarca(idMarca);
-            dto.setPlaca(placa);
-            dto.setCodigo(codigo);
-            dto.setIdTipoVehiculo(idTipoVehiculo);
-            dto.setMecanico(mecanico);
-            dto.setTaller(taller);
-            dto.setIdOperador(idOperador);
-            dto.setIdFoto(idFoto);
-            dto.setEstado(estado != null ? Byte.parseByte(estado) : (byte) 1);
-            dto.setDescripcion(descripcion);
+            VehiculoGuardarDto dto;
+            if (vehiculoDto != null) {
+                dto = vehiculoDto;
+            } else {
+                dto = new VehiculoGuardarDto();
+                dto.setIdMarca(idMarca);
+                dto.setPlaca(placa);
+                dto.setCodigo(codigo);
+                dto.setIdTipoVehiculo(idTipoVehiculo);
+                dto.setMecanico(mecanico);
+                dto.setTaller(taller);
+                dto.setIdOperador(idOperador);
+                dto.setIdFoto(idFoto);
+                dto.setEstado(estado != null ? estado : (byte) 1);
+                dto.setDescripcion(descripcion);
+            }
             
             VehiculoSalidaDto creado = vehiculoService.crear(dto);
             HttpHeaders headers = new HttpHeaders();
@@ -112,31 +132,53 @@ public class VehiculoController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<VehiculoSalidaDto> actualizar(
-        @Parameter(description = "ID del vehículo") @PathVariable Integer id,
-        @Parameter(description = "ID de la marca") @RequestParam(required = false) Integer idMarca,
-        @Parameter(description = "Placa del vehículo") @RequestParam(required = false) String placa,
-        @Parameter(description = "Código del vehículo") @RequestParam(required = false) String codigo,
-        @Parameter(description = "ID del tipo de vehículo") @RequestParam(required = false) Integer idTipoVehiculo,
-        @Parameter(description = "Mecánico") @RequestParam(required = false) String mecanico,
-        @Parameter(description = "Taller") @RequestParam(required = false) String taller,
-        @Parameter(description = "ID del operador") @RequestParam(required = false) Integer idOperador,
-        @Parameter(description = "ID de la foto") @RequestParam(required = false) Integer idFoto,
-        @Parameter(description = "Estado (1: Activo, 0: Inactivo)") @RequestParam(required = false) String estado,
-        @Parameter(description = "Descripción") @RequestParam(required = false) String descripcion
+            @Parameter(description = "ID del vehículo") 
+            @PathVariable Integer id,
+            
+            @Parameter(description = "Datos del vehículo como JSON") 
+            @RequestBody(required = false) VehiculoModificarDto vehiculoDto,
+            
+            // Form data parameters
+            @Parameter(description = "ID de la marca") 
+            @RequestParam(required = false) Integer idMarca,
+            @Parameter(description = "Placa del vehículo") 
+            @RequestParam(required = false) String placa,
+            @Parameter(description = "Código del vehículo") 
+            @RequestParam(required = false) String codigo,
+            @Parameter(description = "ID del tipo de vehículo") 
+            @RequestParam(required = false) Integer idTipoVehiculo,
+            @Parameter(description = "Mecánico") 
+            @RequestParam(required = false) String mecanico,
+            @Parameter(description = "Taller") 
+            @RequestParam(required = false) String taller,
+            @Parameter(description = "ID del operador") 
+            @RequestParam(required = false) Integer idOperador,
+            @Parameter(description = "ID de la foto") 
+            @RequestParam(required = false) Integer idFoto,
+            @Parameter(description = "Estado") 
+            @RequestParam(required = false) Byte estado,
+            @Parameter(description = "Descripción") 
+            @RequestParam(required = false) String descripcion
     ) {
         try {
-            VehiculoModificarDto dto = new VehiculoModificarDto();
-            dto.setId(id);
-            dto.setIdMarca(idMarca);
-            dto.setPlaca(placa);
-            dto.setCodigo(codigo);
-            dto.setIdTipoVehiculo(idTipoVehiculo);
-            dto.setMecanico(mecanico);
-            dto.setTaller(taller);
-            dto.setIdOperador(idOperador);
-            dto.setIdFoto(idFoto);
-            dto.setEstado(estado != null ? Byte.parseByte(estado) : null);
-            dto.setDescripcion(descripcion);
+            VehiculoModificarDto dto;
+            if (vehiculoDto != null) {
+                dto = vehiculoDto;
+                dto.setId(id);
+            } else {
+                dto = new VehiculoModificarDto();
+                dto.setId(id);
+                if (idMarca != null) dto.setIdMarca(idMarca);
+                if (placa != null) dto.setPlaca(placa);
+                if (codigo != null) dto.setCodigo(codigo);
+                if (idTipoVehiculo != null) dto.setIdTipoVehiculo(idTipoVehiculo);
+                if (mecanico != null) dto.setMecanico(mecanico);
+                if (taller != null) dto.setTaller(taller);
+                if (idOperador != null) dto.setIdOperador(idOperador);
+                if (idFoto != null) dto.setIdFoto(idFoto);
+                if (estado != null) dto.setEstado(estado);
+                if (descripcion != null) dto.setDescripcion(descripcion);
+            }
             
             VehiculoSalidaDto actualizado = vehiculoService.actualizar(id, dto);
             return ResponseEntity.ok(actualizado);
@@ -182,5 +224,4 @@ public class VehiculoController {
         boolean existe = vehiculoService.existePorCodigo(codigo);
         return ResponseEntity.ok(existe);
     }
-
 }
