@@ -1,6 +1,8 @@
 package Esfe.Sgar.servicios.Interfaces;
 
-import Esfe.Sgar.modelos.Horario;
+import Esfe.Sgar.dtos.horario.HorarioGuardarDto;
+import Esfe.Sgar.dtos.horario.HorarioModificarDto;
+import Esfe.Sgar.dtos.horario.HorarioSalidaDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -8,19 +10,19 @@ import java.time.LocalTime;
 
 public interface IHorarioService {
 
-    Page<Horario> filtrarHorarios(Integer organizacionId,
-                                  Integer zonaId,
-                                  Byte turno,
-                                  String dia,
-                                  LocalTime inicio,
-                                  LocalTime fin,
-                                  Pageable pageable);
+    Page<HorarioSalidaDto> filtrarHorarios(Integer organizacionId,
+                                           Integer zonaId,
+                                           Byte turno,
+                                           String dia,
+                                           LocalTime inicio,
+                                           LocalTime fin,
+                                           Pageable pageable);
 
-    Horario obtenerPorId(Integer id);
+    HorarioSalidaDto obtenerPorId(Integer id);
 
-    Horario crear(Horario horario);
+    HorarioSalidaDto crear(HorarioGuardarDto dto);
 
-    Horario actualizar(Integer id, Horario horario);
+    HorarioSalidaDto actualizar(Integer id, HorarioModificarDto dto);
 
     void eliminar(Integer id);
 

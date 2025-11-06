@@ -1,5 +1,8 @@
 package Esfe.Sgar.servicios.implementaciones;
 
+import Esfe.Sgar.dtos.horario.HorarioGuardarDto;
+import Esfe.Sgar.dtos.horario.HorarioModificarDto;
+import Esfe.Sgar.dtos.horario.HorarioSalidaDto;
 import Esfe.Sgar.modelos.Horario;
 import Esfe.Sgar.repositorios.HorarioRepository;
 import Esfe.Sgar.servicios.Interfaces.IHorarioService;
@@ -15,7 +18,7 @@ import java.util.Optional;
 public class HorarioService implements IHorarioService {
 
     @Autowired
-    private  HorarioRepository horarioRepository;
+    private HorarioRepository horarioRepository;
 
     @Autowired
     public HorarioService(HorarioRepository horarioRepository) {
@@ -23,56 +26,63 @@ public class HorarioService implements IHorarioService {
     }
 
     @Override
-    public Page<Horario> filtrarHorarios(Integer organizacionId, Integer zonaId, Byte turno, String dia, LocalTime inicio, LocalTime fin, Pageable pageable) {
-        return horarioRepository.filtrarHorarios(organizacionId, zonaId, turno, dia, inicio, fin, pageable);
+    public Page<HorarioSalidaDto> filtrarHorarios(Integer organizacionId, Integer zonaId, Byte turno, String dia, LocalTime inicio, LocalTime fin, Pageable pageable) {
+        return horarioRepository
+                .filtrarHorarios(organizacionId, zonaId, turno, dia, inicio, fin, pageable)
+                .map(this::toSalidaDto);
     }
 
     @Override
-    public Horario obtenerPorId(Integer id) {
+    public HorarioSalidaDto obtenerPorId(Integer id) {
         Optional<Horario> opt = horarioRepository.findById(id);
-        return opt.orElseThrow(() -> new IllegalArgumentException("Horario no encontrado con id: " + id));
+        Horario h = opt.orElseThrow(() -> new IllegalArgumentException("Horario no encontrado con id: " + id));
+        return toSalidaDto(h);
     }
 
     @Override
     @Transactional
-    public Horario crear(Horario horario) {
-        // Validaciones básicas
-        if (horario == null) {
-            throw new IllegalArgumentException("Horario no puede ser nulo");
-        }
-        if (horario.getHoraEntrada() == null || horario.getHoraSalida() == null) {
+    public HorarioSalidaDto crear(HorarioGuardarDto dto) {
+        if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
+        if (dto.getHoraEntrada() == null || dto.getHoraSalida() == null) {
             throw new IllegalArgumentException("Horas de entrada y salida son requeridas");
         }
-        if (horario.getHoraEntrada().isAfter(horario.getHoraSalida())) {
-            throw new IllegalArgumentException("Hora de entrada debe ser anterior a hora de salida");
+        if (!dto.getHoraEntrada().isBefore(dto.getHoraSalida())) {
+            throw new IllegalArgumentException("La hora de entrada debe ser anterior a la hora de salida");
         }
 
-        // Si existe operador/zona y se desea validar superposición, el repository ofrece el método
-        // pero como los modelos pueden tener esas relaciones comentadas, la verificación se delega
-        // solo cuando los ids estén presentes (no nulos)
-        Integer organizacionId = null;
-        try {
-            organizacionId = (horario.getClass().getDeclaredField("organizacion") != null) ? null : null;
-        } catch (NoSuchFieldException e) {
-            // campo operador no presente en clase compilada - ignorar
-        }
+        Horario h = new Horario();
+        h.setHoraEntrada(dto.getHoraEntrada());
+        h.setHoraSalida(dto.getHoraSalida());
+        h.setDia(dto.getDia());
+        h.setIdOrganizacion(dto.getIdOrganizacion());
+        h.setTurno(dto.getTurno());
+        h.setZonaId(dto.getZonaId());
 
-        // Guardar
-        return horarioRepository.save(horario);
+        Horario guardado = horarioRepository.save(h);
+        return toSalidaDto(guardado);
     }
 
     @Override
     @Transactional
-    public Horario actualizar(Integer id, Horario horario) {
-        Horario existente = obtenerPorId(id);
+    public HorarioSalidaDto actualizar(Integer id, HorarioModificarDto dto) {
+        Horario existente = horarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Horario no encontrado con id: " + id));
 
-        if (horario.getHoraEntrada() != null) existente.setHoraEntrada(horario.getHoraEntrada());
-        if (horario.getHoraSalida() != null) existente.setHoraSalida(horario.getHoraSalida());
-        if (horario.getDia() != null) existente.setDia(horario.getDia());
-        if (horario.getTurno() != null) existente.setTurno(horario.getTurno());
+        if (dto.getHoraEntrada() != null && dto.getHoraSalida() != null) {
+            if (!dto.getHoraEntrada().isBefore(dto.getHoraSalida())) {
+                throw new IllegalArgumentException("La hora de entrada debe ser anterior a la hora de salida");
+            }
+        }
 
+        if (dto.getHoraEntrada() != null) existente.setHoraEntrada(dto.getHoraEntrada());
+        if (dto.getHoraSalida() != null) existente.setHoraSalida(dto.getHoraSalida());
+        if (dto.getDia() != null) existente.setDia(dto.getDia());
+        if (dto.getTurno() != null) existente.setTurno(dto.getTurno());
+        if (dto.getIdOrganizacion() != null) existente.setIdOrganizacion(dto.getIdOrganizacion());
+        if (dto.getZonaId() != null) existente.setZonaId(dto.getZonaId());
 
-        return horarioRepository.save(existente);
+        Horario actualizado = horarioRepository.save(existente);
+        return toSalidaDto(actualizado);
     }
 
     @Override
@@ -88,5 +98,17 @@ public class HorarioService implements IHorarioService {
     public boolean existeSuperposicion(Integer organizacionId, String dia, LocalTime horaEntrada, LocalTime horaSalida) {
         if (organizacionId == null || dia == null || horaEntrada == null || horaSalida == null) return false;
         return horarioRepository.existeSuperposicion(organizacionId, dia, horaEntrada, horaSalida);
+    }
+
+    private HorarioSalidaDto toSalidaDto(Horario h) {
+        HorarioSalidaDto out = new HorarioSalidaDto();
+        out.setId(h.getId());
+        out.setHoraEntrada(h.getHoraEntrada());
+        out.setHoraSalida(h.getHoraSalida());
+        out.setDia(h.getDia());
+        out.setIdOrganizacion(h.getIdOrganizacion());
+        out.setTurno(h.getTurno());
+        out.setZonaId(h.getZonaId());
+        return out;
     }
 }

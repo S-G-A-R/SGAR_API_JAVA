@@ -125,5 +125,13 @@ public class Vehiculo {
         this.foto = foto;
     }
 
+        public Integer getOperadorId() {
+            return operadorId;
+        }
+
+        public void setOperadorId(Integer operadorId) {
+            this.operadorId = operadorId;
+        }
+
     
 }

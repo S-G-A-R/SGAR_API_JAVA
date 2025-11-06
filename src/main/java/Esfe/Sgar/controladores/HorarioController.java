@@ -1,5 +1,7 @@
 package Esfe.Sgar.controladores;
-import Esfe.Sgar.modelos.Horario;
+import Esfe.Sgar.dtos.horario.HorarioGuardarDto;
+import Esfe.Sgar.dtos.horario.HorarioModificarDto;
+import Esfe.Sgar.dtos.horario.HorarioSalidaDto;
 import Esfe.Sgar.servicios.Interfaces.IHorarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -36,7 +38,7 @@ public class HorarioController {
         @ApiResponse(responseCode = "400", description = "Parámetros de tiempo inválidos")
     })
     @GetMapping
-    public ResponseEntity<Page<Horario>> listar(
+    public ResponseEntity<Page<HorarioSalidaDto>> listar(
         @Parameter(description = "ID de la organización") @RequestParam(required = false) Integer organizacion,
             @Parameter(description = "ID de la zona") @RequestParam(required = false) Integer zonaId,
             @Parameter(description = "Turno (1: mañana, 2: tarde, 3: noche)") @RequestParam(required = false) Byte turno,
@@ -54,7 +56,7 @@ public class HorarioController {
             return ResponseEntity.badRequest().build();
         }
 
-        Page<Horario> page = horarioService.filtrarHorarios(organizacion, zonaId, turno, dia, tInicio, tFin, pageable);
+        Page<HorarioSalidaDto> page = horarioService.filtrarHorarios(organizacion, zonaId, turno, dia, tInicio, tFin, pageable);
         return ResponseEntity.ok(page);
     }
 
@@ -64,10 +66,10 @@ public class HorarioController {
         @ApiResponse(responseCode = "404", description = "Horario no encontrado")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Horario> obtener(
+    public ResponseEntity<HorarioSalidaDto> obtener(
             @Parameter(description = "ID del horario") @PathVariable Integer id) {
         try {
-            Horario h = horarioService.obtenerPorId(id);
+            HorarioSalidaDto h = horarioService.obtenerPorId(id);
             return ResponseEntity.ok(h);
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -80,28 +82,28 @@ public class HorarioController {
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
     @PostMapping
-    public ResponseEntity<Horario> crear(
-        @Parameter(description = "ID de la organización") @RequestParam Integer organizacion,
-        @Parameter(description = "ID de la zona") @RequestParam Integer zonaId,
-        @Parameter(description = "Turno (1: mañana, 2: tarde, 3: noche)") @RequestParam Byte turno,
+    public ResponseEntity<HorarioSalidaDto> crear(
+        @Parameter(description = "Hora de entrada (HH:mm:ss)") @RequestParam String horaEntrada,
+        @Parameter(description = "Hora de salida (HH:mm:ss)") @RequestParam String horaSalida,
         @Parameter(description = "Día de la semana") @RequestParam String dia,
-        @Parameter(description = "Hora de entrada (HH:mm)") @RequestParam String horaEntrada,
-        @Parameter(description = "Hora de salida (HH:mm)") @RequestParam String horaSalida
+        @Parameter(description = "ID de la organización") @RequestParam Integer idOrganizacion,
+        @Parameter(description = "Turno (1: mañana, 2: tarde, 3: noche)") @RequestParam Byte turno,
+        @Parameter(description = "ID de la zona") @RequestParam Integer zonaId
     ) {
         try {
-            Horario horario = new Horario();
-            horario.setIdOrganizacion(organizacion);
-            horario.setZonaId(zonaId);
-            horario.setTurno(turno);
-            horario.setDia(dia);
-            horario.setHoraEntrada(LocalTime.parse(horaEntrada));
-            horario.setHoraSalida(LocalTime.parse(horaSalida));
-
-            Horario creado = horarioService.crear(horario);
+            HorarioGuardarDto dto = new HorarioGuardarDto();
+            dto.setHoraEntrada(LocalTime.parse(horaEntrada));
+            dto.setHoraSalida(LocalTime.parse(horaSalida));
+            dto.setDia(dia);
+            dto.setIdOrganizacion(idOrganizacion);
+            dto.setTurno(turno);
+            dto.setZonaId(zonaId);
+            
+            HorarioSalidaDto creado = horarioService.crear(dto);
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(URI.create("/api/horarios/" + creado.getId()));
             return new ResponseEntity<>(creado, headers, HttpStatus.CREATED);
-        } catch (DateTimeParseException e) {
+        } catch (DateTimeParseException ex) {
             return ResponseEntity.badRequest().build();
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().build();
@@ -115,27 +117,28 @@ public class HorarioController {
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Horario> actualizar(
+    public ResponseEntity<HorarioSalidaDto> actualizar(
         @Parameter(description = "ID del horario") @PathVariable Integer id,
-        @Parameter(description = "ID de la organización") @RequestParam Integer organizacion,
-        @Parameter(description = "ID de la zona") @RequestParam Integer zonaId,
-        @Parameter(description = "Turno (1: mañana, 2: tarde, 3: noche)") @RequestParam Byte turno,
+        @Parameter(description = "Hora de entrada (HH:mm:ss)") @RequestParam String horaEntrada,
+        @Parameter(description = "Hora de salida (HH:mm:ss)") @RequestParam String horaSalida,
         @Parameter(description = "Día de la semana") @RequestParam String dia,
-        @Parameter(description = "Hora de entrada (HH:mm)") @RequestParam String horaEntrada,
-        @Parameter(description = "Hora de salida (HH:mm)") @RequestParam String horaSalida
+        @Parameter(description = "ID de la organización") @RequestParam Integer idOrganizacion,
+        @Parameter(description = "Turno (1: mañana, 2: tarde, 3: noche)") @RequestParam Byte turno,
+        @Parameter(description = "ID de la zona") @RequestParam Integer zonaId
     ) {
         try {
-            Horario horario = new Horario();
-            horario.setIdOrganizacion(organizacion);
-            horario.setZonaId(zonaId);
-            horario.setTurno(turno);
-            horario.setDia(dia);
-            horario.setHoraEntrada(LocalTime.parse(horaEntrada));
-            horario.setHoraSalida(LocalTime.parse(horaSalida));
-
-            Horario actualizado = horarioService.actualizar(id, horario);
+            HorarioModificarDto dto = new HorarioModificarDto();
+            dto.setId(id);
+            dto.setHoraEntrada(LocalTime.parse(horaEntrada));
+            dto.setHoraSalida(LocalTime.parse(horaSalida));
+            dto.setDia(dia);
+            dto.setIdOrganizacion(idOrganizacion);
+            dto.setTurno(turno);
+            dto.setZonaId(zonaId);
+            
+            HorarioSalidaDto actualizado = horarioService.actualizar(id, dto);
             return ResponseEntity.ok(actualizado);
-        } catch (DateTimeParseException e) {
+        } catch (DateTimeParseException ex) {
             return ResponseEntity.badRequest().build();
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
