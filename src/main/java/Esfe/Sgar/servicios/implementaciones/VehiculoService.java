@@ -3,9 +3,11 @@ package Esfe.Sgar.servicios.implementaciones;
 import Esfe.Sgar.dtos.vehiculo.VehiculoGuardarDto;
 import Esfe.Sgar.dtos.vehiculo.VehiculoModificarDto;
 import Esfe.Sgar.dtos.vehiculo.VehiculoSalidaDto;
+import Esfe.Sgar.modelos.Foto;
 import Esfe.Sgar.modelos.Marca;
 import Esfe.Sgar.modelos.TipoVehiculo;
 import Esfe.Sgar.modelos.Vehiculo;
+import Esfe.Sgar.repositorios.FotoRepository;
 import Esfe.Sgar.repositorios.MarcaRepository;
 import Esfe.Sgar.repositorios.TipoVehiculoRepository;
 import Esfe.Sgar.repositorios.VehiculoRepository;
@@ -29,6 +31,9 @@ public class VehiculoService implements IVehiculoService {
     
     @Autowired
     private TipoVehiculoRepository tipoVehiculoRepository;
+    
+        @Autowired
+        private FotoRepository fotoRepository;
 
     @Override
     public Page<VehiculoSalidaDto> buscarConFiltros(String placa, String codigo, Integer marcaId, 
@@ -77,8 +82,14 @@ public class VehiculoService implements IVehiculoService {
         v.setTaller(dto.getTaller());
         v.setEstado(dto.getEstado());
         v.setDescripcion(dto.getDescripcion());
-        v.setFoto(dto.getFoto());
         v.setOperadorId(dto.getIdOperador());
+        
+        // Asignar foto si se proporciona
+        if (dto.getIdFoto() != null) {
+            Foto foto = fotoRepository.findById(dto.getIdFoto())
+                .orElseThrow(() -> new IllegalArgumentException("Foto no encontrada con id: " + dto.getIdFoto()));
+            v.setFoto(foto);
+        }
 
         Vehiculo guardado = vehiculoRepository.save(v);
         return toSalidaDto(guardado);
@@ -124,10 +135,14 @@ public class VehiculoService implements IVehiculoService {
         existente.setTaller(dto.getTaller());
         existente.setEstado(dto.getEstado());
         existente.setDescripcion(dto.getDescripcion());
-        if (dto.getFoto() != null) {
-            existente.setFoto(dto.getFoto());
+           existente.setOperadorId(dto.getIdOperador());
+        
+           // Actualizar foto si se proporciona
+           if (dto.getIdFoto() != null) {
+              Foto foto = fotoRepository.findById(dto.getIdFoto())
+                    .orElseThrow(() -> new IllegalArgumentException("Foto no encontrada con id: " + dto.getIdFoto()));
+              existente.setFoto(foto);
         }
-            existente.setOperadorId(dto.getIdOperador());
 
         Vehiculo actualizado = vehiculoRepository.save(existente);
         return toSalidaDto(actualizado);
@@ -167,7 +182,12 @@ public class VehiculoService implements IVehiculoService {
         out.setIdOperador(v.getOperadorId());
         out.setEstado(v.getEstado());
         out.setDescripcion(v.getDescripcion());
-        out.setFoto(v.getFoto());
+        
+            // Mapear información de la foto si existe
+            if (v.getFoto() != null) {
+                out.setIdFoto(v.getFoto().getId());
+            }
+        
         return out;
     }
 }

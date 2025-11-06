@@ -14,11 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.net.URI;
 
 @RestController
@@ -71,7 +70,7 @@ public class VehiculoController {
         @ApiResponse(responseCode = "201", description = "Vehículo creado exitosamente"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<VehiculoSalidaDto> crear(
         @Parameter(description = "ID de la marca") @RequestParam Integer idMarca,
         @Parameter(description = "Placa del vehículo") @RequestParam String placa,
@@ -79,10 +78,10 @@ public class VehiculoController {
         @Parameter(description = "ID del tipo de vehículo") @RequestParam Integer idTipoVehiculo,
         @Parameter(description = "Mecánico") @RequestParam(required = false) String mecanico,
         @Parameter(description = "Taller") @RequestParam(required = false) String taller,
-            @Parameter(description = "ID del operador") @RequestParam(required = false) Integer idOperador,
+        @Parameter(description = "ID del operador") @RequestParam(required = false) Integer idOperador,
+        @Parameter(description = "ID de la foto") @RequestParam(required = false) Integer idFoto,
         @Parameter(description = "Estado") @RequestParam(required = false) Byte estado,
-        @Parameter(description = "Descripción") @RequestParam(required = false) String descripcion,
-        @Parameter(description = "Foto del vehículo") @RequestParam(required = false) MultipartFile foto
+        @Parameter(description = "Descripción") @RequestParam(required = false) String descripcion
     ) {
         try {
             VehiculoGuardarDto dto = new VehiculoGuardarDto();
@@ -92,19 +91,15 @@ public class VehiculoController {
             dto.setIdTipoVehiculo(idTipoVehiculo);
             dto.setMecanico(mecanico);
             dto.setTaller(taller);
-                dto.setIdOperador(idOperador);
+            dto.setIdOperador(idOperador);
+            dto.setIdFoto(idFoto);
             dto.setEstado(estado != null ? estado : (byte) 1);
             dto.setDescripcion(descripcion);
-            if (foto != null && !foto.isEmpty()) {
-                dto.setFoto(foto.getBytes());
-            }
             
             VehiculoSalidaDto creado = vehiculoService.crear(dto);
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(URI.create("/api/vehiculos/" + creado.getId()));
             return new ResponseEntity<>(creado, headers, HttpStatus.CREATED);
-        } catch (IOException ex) {
-            return ResponseEntity.badRequest().build();
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().build();
         }
@@ -116,7 +111,7 @@ public class VehiculoController {
         @ApiResponse(responseCode = "404", description = "Vehículo no encontrado"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<VehiculoSalidaDto> actualizar(
         @Parameter(description = "ID del vehículo") @PathVariable Integer id,
         @Parameter(description = "ID de la marca") @RequestParam Integer idMarca,
@@ -125,10 +120,10 @@ public class VehiculoController {
         @Parameter(description = "ID del tipo de vehículo") @RequestParam Integer idTipoVehiculo,
         @Parameter(description = "Mecánico") @RequestParam(required = false) String mecanico,
         @Parameter(description = "Taller") @RequestParam(required = false) String taller,
-            @Parameter(description = "ID del operador") @RequestParam(required = false) Integer idOperador,
+        @Parameter(description = "ID del operador") @RequestParam(required = false) Integer idOperador,
+        @Parameter(description = "ID de la foto") @RequestParam(required = false) Integer idFoto,
         @Parameter(description = "Estado") @RequestParam(required = false) Byte estado,
-        @Parameter(description = "Descripción") @RequestParam(required = false) String descripcion,
-        @Parameter(description = "Foto del vehículo") @RequestParam(required = false) MultipartFile foto
+        @Parameter(description = "Descripción") @RequestParam(required = false) String descripcion
     ) {
         try {
             VehiculoModificarDto dto = new VehiculoModificarDto();
@@ -139,17 +134,13 @@ public class VehiculoController {
             dto.setIdTipoVehiculo(idTipoVehiculo);
             dto.setMecanico(mecanico);
             dto.setTaller(taller);
-                dto.setIdOperador(idOperador);
+            dto.setIdOperador(idOperador);
+            dto.setIdFoto(idFoto);
             dto.setEstado(estado);
             dto.setDescripcion(descripcion);
-            if (foto != null && !foto.isEmpty()) {
-                dto.setFoto(foto.getBytes());
-            }
             
             VehiculoSalidaDto actualizado = vehiculoService.actualizar(id, dto);
             return ResponseEntity.ok(actualizado);
-        } catch (IOException ex) {
-            return ResponseEntity.badRequest().build();
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -192,4 +183,5 @@ public class VehiculoController {
         boolean existe = vehiculoService.existePorCodigo(codigo);
         return ResponseEntity.ok(existe);
     }
+
 }

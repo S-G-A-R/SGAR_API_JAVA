@@ -41,9 +41,9 @@ public class Vehiculo {
     @Column(name = "Descripcion", length = 500)
     private String descripcion;
 
-    @Lob
-    @Column(name = "Foto")
-    private byte[] foto;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "IdFoto")
+    private Foto foto;
 
     public Integer getId() {
         return id;
@@ -117,11 +117,11 @@ public class Vehiculo {
         this.descripcion = descripcion;
     }
 
-    public byte[] getFoto() {
+    public Foto getFoto() {
         return foto;
     }
 
-    public void setFoto(byte[] foto) {
+    public void setFoto(Foto foto) {
         this.foto = foto;
     }
 

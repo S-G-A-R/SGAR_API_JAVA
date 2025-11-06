@@ -28,6 +28,8 @@ public class VehiculoGuardarDto {
 
     private Integer idOperador;
 
+    private Integer idFoto;
+
     @NotNull(message = "El estado es requerido")
     @Min(value = 0, message = "El estado debe ser un valor entre 0 y 127")
     @Max(value = 127, message = "El estado debe ser un valor entre 0 y 127")
@@ -35,6 +37,4 @@ public class VehiculoGuardarDto {
 
     @Size(max = 500, message = "La descripción no debe exceder los 500 caracteres")
     private String descripcion;
-
-    private byte[] foto;
 }

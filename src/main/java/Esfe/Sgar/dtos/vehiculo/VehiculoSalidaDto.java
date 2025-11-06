@@ -16,7 +16,7 @@ public class VehiculoSalidaDto {
     private String taller;
     private Integer idOperador;
     private String nombreOperador;
+    private Integer idFoto;
     private Byte estado;
     private String descripcion;
-    private byte[] foto;
 }
