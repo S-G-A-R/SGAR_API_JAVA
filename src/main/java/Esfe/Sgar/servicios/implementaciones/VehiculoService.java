@@ -12,6 +12,7 @@ import Esfe.Sgar.repositorios.MarcaRepository;
 import Esfe.Sgar.repositorios.TipoVehiculoRepository;
 import Esfe.Sgar.repositorios.VehiculoRepository;
 import Esfe.Sgar.servicios.Interfaces.IVehiculoService;
+import Esfe.Sgar.servicios.Interfaces.IExternalSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,17 +24,24 @@ import java.util.Optional;
 @Service
 public class VehiculoService implements IVehiculoService {
 
+    private final VehiculoRepository vehiculoRepository;
+    private final MarcaRepository marcaRepository;
+    private final TipoVehiculoRepository tipoVehiculoRepository;
+    private final FotoRepository fotoRepository;
+    private final IExternalSecurityService externalSecurityService;
+
     @Autowired
-    private VehiculoRepository vehiculoRepository;
-    
-    @Autowired
-    private MarcaRepository marcaRepository;
-    
-    @Autowired
-    private TipoVehiculoRepository tipoVehiculoRepository;
-    
-        @Autowired
-        private FotoRepository fotoRepository;
+    public VehiculoService(VehiculoRepository vehiculoRepository,
+                          MarcaRepository marcaRepository,
+                          TipoVehiculoRepository tipoVehiculoRepository,
+                          FotoRepository fotoRepository,
+                          IExternalSecurityService externalSecurityService) {
+        this.vehiculoRepository = vehiculoRepository;
+        this.marcaRepository = marcaRepository;
+        this.tipoVehiculoRepository = tipoVehiculoRepository;
+        this.fotoRepository = fotoRepository;
+        this.externalSecurityService = externalSecurityService;
+    }
 
     @Override
     public Page<VehiculoSalidaDto> buscarConFiltros(String placa, String codigo, Integer marcaId, 
@@ -54,6 +62,11 @@ public class VehiculoService implements IVehiculoService {
     @Transactional
     public VehiculoSalidaDto crear(VehiculoGuardarDto dto) {
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
+        
+        // Validar que existe el operador
+        if (!externalSecurityService.existeOperador(dto.getIdOperador())) {
+            throw new IllegalArgumentException("El operador con ID " + dto.getIdOperador() + " no existe");
+        }
         
         // Validar placa única
         if (vehiculoRepository.existsByPlaca(dto.getPlaca())) {

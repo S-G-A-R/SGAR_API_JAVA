@@ -32,4 +32,7 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
     
     // Verificar existencia por código
     boolean existsByCodigo(String codigo);
+    
+    // Verificar si una foto está siendo usada por algún vehículo
+    boolean existsByFotoId(Integer fotoId);
 }

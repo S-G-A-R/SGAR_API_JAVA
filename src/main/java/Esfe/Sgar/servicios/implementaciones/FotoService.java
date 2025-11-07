@@ -5,6 +5,7 @@ import Esfe.Sgar.dtos.foto.FotoModificarDto;
 import Esfe.Sgar.dtos.foto.FotoSalidaDto;
 import Esfe.Sgar.modelos.Foto;
 import Esfe.Sgar.repositorios.FotoRepository;
+import Esfe.Sgar.repositorios.VehiculoRepository;
 import Esfe.Sgar.servicios.Interfaces.IFotoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,12 @@ public class FotoService implements IFotoService {
     private long maxImageSize;
 
     private final FotoRepository fotoRepository;
+    private final VehiculoRepository vehiculoRepository;
 
     @Autowired
-    public FotoService(FotoRepository fotoRepository) {
+    public FotoService(FotoRepository fotoRepository, VehiculoRepository vehiculoRepository) {
         this.fotoRepository = fotoRepository;
+        this.vehiculoRepository = vehiculoRepository;
     }
 
     @Override
@@ -61,20 +64,9 @@ public class FotoService implements IFotoService {
     @Override
     @Transactional
     public FotoSalidaDto crear(FotoGuardarDto dto) {
-        if (dto == null) {
-            logger.error("Intento de crear foto con DTO nulo");
-            throw new IllegalArgumentException("El DTO no puede ser nulo");
-        }
+        logger.debug("Iniciando creación de foto");
         
-        if (dto.getImagen() == null || dto.getImagen().length == 0) {
-            logger.error("Intento de crear foto sin imagen");
-            throw new IllegalArgumentException("La imagen es requerida");
-        }
-
-        if (dto.getImagen().length > maxImageSize) {
-            logger.error("Intento de subir imagen que excede el tamaño máximo permitido: {} bytes", dto.getImagen().length);
-            throw new IllegalArgumentException("La imagen excede el tamaño máximo permitido de " + maxImageSize + " bytes");
-        }
+        validarDto(dto);
 
         try {
             Foto f = new Foto();
@@ -103,19 +95,7 @@ public class FotoService implements IFotoService {
                 });
 
         try {
-            if (dto.getImagen() != null && dto.getImagen().length > 0) {
-                if (dto.getImagen().length > maxImageSize) {
-                    logger.error("Intento de actualizar con imagen que excede el tamaño máximo: {} bytes", dto.getImagen().length);
-                    throw new IllegalArgumentException("La imagen excede el tamaño máximo permitido de " + maxImageSize + " bytes");
-                }
-                existente.setImagen(dto.getImagen());
-                existente.setTamano((long) dto.getImagen().length);
-            }
-            
-            if (dto.getTipoMime() != null) {
-                existente.setTipoMime(dto.getTipoMime());
-            }
-
+            actualizarFoto(existente, dto);
             Foto actualizada = fotoRepository.save(existente);
             logger.info("Foto actualizada exitosamente con ID: {}", actualizada.getId());
             return toSalidaDto(actualizada);
@@ -132,10 +112,8 @@ public class FotoService implements IFotoService {
     public void eliminar(Integer id) {
         logger.debug("Iniciando eliminación de foto con ID: {}", id);
         
-        if (!fotoRepository.existsById(id)) {
-            logger.error("Intento de eliminar foto inexistente con ID: {}", id);
-            throw new IllegalArgumentException("Foto no encontrada con id: " + id);
-        }
+        validarExistenciaFoto(id);
+        validarFotoEnUso(id);
         
         try {
             fotoRepository.deleteById(id);
@@ -143,6 +121,52 @@ public class FotoService implements IFotoService {
         } catch (Exception e) {
             logger.error("Error al eliminar la foto con ID: {}", id, e);
             throw new RuntimeException("Error al eliminar la imagen", e);
+        }
+    }
+
+    private void validarDto(FotoGuardarDto dto) {
+        if (dto == null) {
+            logger.error("Intento de crear foto con DTO nulo");
+            throw new IllegalArgumentException("El DTO no puede ser nulo");
+        }
+        
+        if (dto.getImagen() == null || dto.getImagen().length == 0) {
+            logger.error("Intento de crear foto sin imagen");
+            throw new IllegalArgumentException("La imagen es requerida");
+        }
+
+        if (dto.getImagen().length > maxImageSize) {
+            logger.error("Intento de subir imagen que excede el tamaño máximo permitido: {} bytes", dto.getImagen().length);
+            throw new IllegalArgumentException("La imagen excede el tamaño máximo permitido de " + maxImageSize + " bytes");
+        }
+    }
+
+    private void validarExistenciaFoto(Integer id) {
+        if (!fotoRepository.existsById(id)) {
+            logger.error("Intento de eliminar foto inexistente con ID: {}", id);
+            throw new IllegalArgumentException("Foto no encontrada con id: " + id);
+        }
+    }
+
+    private void validarFotoEnUso(Integer id) {
+        if (vehiculoRepository.existsByFotoId(id)) {
+            logger.error("Intento de eliminar foto que está en uso por un vehículo, ID: {}", id);
+            throw new IllegalStateException("No se puede eliminar la foto porque está siendo utilizada por un vehículo");
+        }
+    }
+
+    private void actualizarFoto(Foto existente, FotoModificarDto dto) {
+        if (dto.getImagen() != null && dto.getImagen().length > 0) {
+            if (dto.getImagen().length > maxImageSize) {
+                logger.error("Intento de actualizar con imagen que excede el tamaño máximo: {} bytes", dto.getImagen().length);
+                throw new IllegalArgumentException("La imagen excede el tamaño máximo permitido de " + maxImageSize + " bytes");
+            }
+            existente.setImagen(dto.getImagen());
+            existente.setTamano((long) dto.getImagen().length);
+        }
+        
+        if (dto.getTipoMime() != null) {
+            existente.setTipoMime(dto.getTipoMime());
         }
     }
 

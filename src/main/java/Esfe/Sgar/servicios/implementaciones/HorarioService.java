@@ -6,6 +6,7 @@ import Esfe.Sgar.dtos.horario.HorarioSalidaDto;
 import Esfe.Sgar.modelos.Horario;
 import Esfe.Sgar.repositorios.HorarioRepository;
 import Esfe.Sgar.servicios.Interfaces.IHorarioService;
+import Esfe.Sgar.servicios.Interfaces.IExternalSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,12 +18,14 @@ import java.util.Optional;
 @Service
 public class HorarioService implements IHorarioService {
 
-    @Autowired
-    private HorarioRepository horarioRepository;
+    private final HorarioRepository horarioRepository;
+    private final IExternalSecurityService externalSecurityService;
 
     @Autowired
-    public HorarioService(HorarioRepository horarioRepository) {
+    public HorarioService(HorarioRepository horarioRepository, 
+                         IExternalSecurityService externalSecurityService) {
         this.horarioRepository = horarioRepository;
+        this.externalSecurityService = externalSecurityService;
     }
 
     @Override
@@ -48,6 +51,11 @@ public class HorarioService implements IHorarioService {
         }
         if (!dto.getHoraEntrada().isBefore(dto.getHoraSalida())) {
             throw new IllegalArgumentException("La hora de entrada debe ser anterior a la hora de salida");
+        }
+        
+        // Validar que existe la organización
+        if (!externalSecurityService.existeOrganizacion(dto.getIdOrganizacion())) {
+            throw new IllegalArgumentException("La organización con ID " + dto.getIdOrganizacion() + " no existe");
         }
 
         Horario h = new Horario();

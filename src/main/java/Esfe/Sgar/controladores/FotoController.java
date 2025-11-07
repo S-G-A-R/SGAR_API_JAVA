@@ -90,15 +90,9 @@ public class FotoController {
             @Parameter(description = "Tipo MIME") @RequestParam(required = false) String tipoMime
     ) {
         try {
-            if (imagen == null || imagen.isEmpty()) {
-                return ResponseEntity.badRequest().build();
-            }
-
-            // Validar que sea una imagen
+            // Validación y extracción de imagen en helpers para reducir duplicación
+            validateImageOrThrow(imagen);
             String contentType = imagen.getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) {
-                return ResponseEntity.badRequest().build();
-            }
 
             FotoGuardarDto dto = new FotoGuardarDto();
             dto.setImagen(imagen.getBytes());
@@ -109,9 +103,7 @@ public class FotoController {
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(URI.create("/api/fotos/" + creada.getId()));
             return new ResponseEntity<>(creada, headers, HttpStatus.CREATED);
-        } catch (IOException ex) {
-            return ResponseEntity.badRequest().build();
-        } catch (IllegalArgumentException ex) {
+        } catch (IOException | IllegalArgumentException ex) {
             return ResponseEntity.badRequest().build();
         }
     }
@@ -132,24 +124,15 @@ public class FotoController {
             FotoModificarDto dto = new FotoModificarDto();
             dto.setId(id);
 
-            if (imagen != null && !imagen.isEmpty()) {
-                // Validar que sea una imagen
-                String contentType = imagen.getContentType();
-                if (contentType == null || !contentType.startsWith("image/")) {
-                    return ResponseEntity.badRequest().build();
-                }
-                dto.setImagen(imagen.getBytes());
-                dto.setTamano(imagen.getSize());
-                dto.setTipoMime(tipoMime != null ? tipoMime : contentType);
-            } else if (tipoMime != null) {
-                dto.setTipoMime(tipoMime);
-            }
+            // El helper maneja la validación y población del DTO en base al multipart y tipoMime
+            populateDtoFromMultipart(dto, imagen, tipoMime);
 
             FotoSalidaDto actualizada = fotoService.actualizar(id, dto);
             return ResponseEntity.ok(actualizada);
         } catch (IOException ex) {
             return ResponseEntity.badRequest().build();
         } catch (IllegalArgumentException ex) {
+            // IllegalArgumentException aquí se interpreta como recurso no encontrado por el servicio
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -160,13 +143,51 @@ public class FotoController {
         @ApiResponse(responseCode = "404", description = "Foto no encontrada")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
+    public ResponseEntity<?> eliminar(
             @Parameter(description = "ID de la foto") @PathVariable Integer id) {
         try {
             fotoService.eliminar(id);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok().body(new MessageResponse("Foto eliminada exitosamente"));
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new MessageResponse("Foto no encontrada"));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new MessageResponse(ex.getMessage()));
+        }
+    }
+
+    private static class MessageResponse {
+        private final String mensaje;
+
+        public MessageResponse(String mensaje) {
+            this.mensaje = mensaje;
+        }
+
+        public String getMensaje() {
+            return mensaje;
+        }
+    }
+
+    // --- Helpers para validar y poblar DTOs con multipart ---
+    private void validateImageOrThrow(MultipartFile imagen) {
+        if (imagen == null || imagen.isEmpty()) {
+            throw new IllegalArgumentException("Imagen vacía o nula");
+        }
+        String contentType = imagen.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Tipo MIME no es una imagen");
+        }
+    }
+
+    private void populateDtoFromMultipart(FotoModificarDto dto, MultipartFile imagen, String tipoMime) throws java.io.IOException {
+        if (imagen != null && !imagen.isEmpty()) {
+            validateImageOrThrow(imagen);
+            dto.setImagen(imagen.getBytes());
+            dto.setTamano(imagen.getSize());
+            dto.setTipoMime(tipoMime != null ? tipoMime : imagen.getContentType());
+        } else if (tipoMime != null) {
+            dto.setTipoMime(tipoMime);
         }
     }
 }
