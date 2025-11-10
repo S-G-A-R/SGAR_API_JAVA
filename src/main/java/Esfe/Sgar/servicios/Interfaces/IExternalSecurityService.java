@@ -14,4 +14,11 @@ public interface IExternalSecurityService {
      * @return true si el operador existe
      */
     boolean existeOperador(Integer operadorId);
+    
+    /**
+     * Verifica si existe una zona por su ID consultando la API de navegación
+     * @param zonaId ID de la zona a verificar
+     * @return true si la zona existe
+     */
+    boolean existeZona(Integer zonaId);
 }

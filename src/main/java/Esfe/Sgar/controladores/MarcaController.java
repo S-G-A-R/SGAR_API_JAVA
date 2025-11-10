@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -36,6 +37,7 @@ public class MarcaController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Búsqueda exitosa")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
     @GetMapping
     public ResponseEntity<Page<MarcaSalidaDto>> buscar(
             @Parameter(description = "Nombre de la marca (opcional)") @RequestParam(required = false) String nombre,
@@ -51,6 +53,7 @@ public class MarcaController {
         @ApiResponse(responseCode = "200", description = "Marca encontrada"),
         @ApiResponse(responseCode = "404", description = "Marca no encontrada")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
     @GetMapping("/{id}")
     public ResponseEntity<MarcaSalidaDto> obtener(
             @Parameter(description = "ID de la marca") @PathVariable Integer id) {
@@ -67,6 +70,7 @@ public class MarcaController {
         @ApiResponse(responseCode = "201", description = "Marca creada exitosamente"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @PostMapping
     public ResponseEntity<MarcaSalidaDto> crear(@Valid @RequestBody MarcaGuardarDto dto) {
         try {
@@ -85,6 +89,7 @@ public class MarcaController {
         @ApiResponse(responseCode = "404", description = "Marca no encontrada"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @PutMapping("/{id}")
     public ResponseEntity<MarcaSalidaDto> actualizar(
             @Parameter(description = "ID de la marca") @PathVariable Integer id,
@@ -105,6 +110,7 @@ public class MarcaController {
         @ApiResponse(responseCode = "204", description = "Marca eliminada exitosamente"),
         @ApiResponse(responseCode = "404", description = "Marca no encontrada")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(
             @Parameter(description = "ID de la marca") @PathVariable Integer id) {
@@ -120,6 +126,7 @@ public class MarcaController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Verificación realizada exitosamente")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
     @GetMapping("/existe")
     public ResponseEntity<Boolean> existeCombinacion(
             @Parameter(description = "Nombre de la marca") @RequestParam String nombre,

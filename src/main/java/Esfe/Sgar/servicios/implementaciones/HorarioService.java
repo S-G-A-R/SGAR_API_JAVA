@@ -57,6 +57,11 @@ public class HorarioService implements IHorarioService {
         if (!externalSecurityService.existeOrganizacion(dto.getIdOrganizacion())) {
             throw new IllegalArgumentException("La organización con ID " + dto.getIdOrganizacion() + " no existe");
         }
+        
+        // Validar que existe la zona
+        if (!externalSecurityService.existeZona(dto.getZonaId())) {
+            throw new IllegalArgumentException("La zona con ID " + dto.getZonaId() + " no existe");
+        }
 
         Horario h = new Horario();
         h.setHoraEntrada(dto.getHoraEntrada());
@@ -79,6 +84,20 @@ public class HorarioService implements IHorarioService {
         if (dto.getHoraEntrada() != null && dto.getHoraSalida() != null) {
             if (!dto.getHoraEntrada().isBefore(dto.getHoraSalida())) {
                 throw new IllegalArgumentException("La hora de entrada debe ser anterior a la hora de salida");
+            }
+        }
+        
+        // Validar organización si cambió
+        if (dto.getIdOrganizacion() != null && !dto.getIdOrganizacion().equals(existente.getIdOrganizacion())) {
+            if (!externalSecurityService.existeOrganizacion(dto.getIdOrganizacion())) {
+                throw new IllegalArgumentException("La organización con ID " + dto.getIdOrganizacion() + " no existe");
+            }
+        }
+        
+        // Validar zona si cambió
+        if (dto.getZonaId() != null && !dto.getZonaId().equals(existente.getZonaId())) {
+            if (!externalSecurityService.existeZona(dto.getZonaId())) {
+                throw new IllegalArgumentException("La zona con ID " + dto.getZonaId() + " no existe");
             }
         }
 

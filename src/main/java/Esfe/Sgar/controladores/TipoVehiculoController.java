@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -35,6 +36,7 @@ public class TipoVehiculoController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Búsqueda exitosa")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
     @GetMapping
     public ResponseEntity<Page<TipoVehiculoSalidaDto>> buscar(
             @Parameter(description = "Tipo (opcional)") @RequestParam(required = false) Byte tipo,
@@ -49,6 +51,7 @@ public class TipoVehiculoController {
         @ApiResponse(responseCode = "200", description = "Tipo encontrado"),
         @ApiResponse(responseCode = "404", description = "Tipo no encontrado")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
     @GetMapping("/{id}")
     public ResponseEntity<TipoVehiculoSalidaDto> obtener(
             @Parameter(description = "ID del tipo de vehículo") @PathVariable Integer id) {
@@ -65,6 +68,7 @@ public class TipoVehiculoController {
         @ApiResponse(responseCode = "201", description = "Tipo creado exitosamente"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @PostMapping
     public ResponseEntity<TipoVehiculoSalidaDto> crear(
         @Parameter(description = "Tipo (valor numérico)") @RequestParam Byte tipo,
@@ -90,6 +94,7 @@ public class TipoVehiculoController {
         @ApiResponse(responseCode = "404", description = "Tipo no encontrado"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @PutMapping("/{id}")
     public ResponseEntity<TipoVehiculoSalidaDto> actualizar(
         @Parameter(description = "ID del tipo de vehículo") @PathVariable Integer id,
@@ -114,6 +119,7 @@ public class TipoVehiculoController {
         @ApiResponse(responseCode = "204", description = "Tipo eliminado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Tipo no encontrado")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(
             @Parameter(description = "ID del tipo de vehículo") @PathVariable Integer id) {
@@ -129,6 +135,7 @@ public class TipoVehiculoController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Verificación realizada exitosamente")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
     @GetMapping("/existe")
     public ResponseEntity<Boolean> existe(
             @Parameter(description = "Tipo a verificar") @RequestParam Byte tipo) {

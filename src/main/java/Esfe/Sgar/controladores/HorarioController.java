@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -37,6 +38,7 @@ public class HorarioController {
         @ApiResponse(responseCode = "200", description = "Horarios encontrados"),
         @ApiResponse(responseCode = "400", description = "Parámetros de tiempo inválidos")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
     @GetMapping
     public ResponseEntity<Page<HorarioSalidaDto>> listar(
         @Parameter(description = "ID de la organización") @RequestParam(required = false) Integer organizacion,
@@ -65,6 +67,7 @@ public class HorarioController {
         @ApiResponse(responseCode = "200", description = "Horario encontrado"),
         @ApiResponse(responseCode = "404", description = "Horario no encontrado")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
     @GetMapping("/{id}")
     public ResponseEntity<HorarioSalidaDto> obtener(
             @Parameter(description = "ID del horario") @PathVariable Integer id) {
@@ -81,6 +84,7 @@ public class HorarioController {
         @ApiResponse(responseCode = "201", description = "Horario creado exitosamente"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @PostMapping
     public ResponseEntity<HorarioSalidaDto> crear(
         @Parameter(description = "Hora de entrada (HH:mm:ss)") @RequestParam String horaEntrada,
@@ -116,6 +120,7 @@ public class HorarioController {
         @ApiResponse(responseCode = "404", description = "Horario no encontrado"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<HorarioSalidaDto> actualizar(
         @Parameter(description = "ID del horario") @PathVariable Integer id,
@@ -150,6 +155,7 @@ public class HorarioController {
         @ApiResponse(responseCode = "204", description = "Horario eliminado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Horario no encontrado")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(
             @Parameter(description = "ID del horario") @PathVariable Integer id) {
@@ -166,6 +172,7 @@ public class HorarioController {
         @ApiResponse(responseCode = "200", description = "Verificación realizada exitosamente"),
         @ApiResponse(responseCode = "400", description = "Formato de hora inválido")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
     @GetMapping("/check-overlap")
     public ResponseEntity<Boolean> checkOverlap(
             @Parameter(description = "ID de la organización") @RequestParam Integer organizacionId,

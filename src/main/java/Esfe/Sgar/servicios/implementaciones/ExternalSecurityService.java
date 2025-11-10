@@ -18,11 +18,14 @@ public class ExternalSecurityService implements IExternalSecurityService {
     
     private final RestTemplate restTemplate;
     private final String securityApiUrl;
+    private final String navigationApiUrl;
     
     public ExternalSecurityService(RestTemplate restTemplate, 
-                                 @Value("${external.api.security.url}") String securityApiUrl) {
+                                 @Value("${external.api.security.url}") String securityApiUrl,
+                                 @Value("${external.api.navigation.url}") String navigationApiUrl) {
         this.restTemplate = restTemplate;
         this.securityApiUrl = securityApiUrl.endsWith("/") ? securityApiUrl : securityApiUrl + "/";
+        this.navigationApiUrl = navigationApiUrl.endsWith("/") ? navigationApiUrl : navigationApiUrl + "/";
     }
     
     @Override
@@ -60,6 +63,23 @@ public class ExternalSecurityService implements IExternalSecurityService {
         return false;
     }
 
+    @Override
+    public boolean existeZona(Integer zonaId) {
+        if (zonaId == null || zonaId <= 0) {
+            logger.warn("ID de zona inválido: {}", zonaId);
+            return false;
+        }
+        String url = navigationApiUrl + "zones/" + zonaId;
+        ResponseEntity<ZonaResponse> resp = safeGet(url, ZonaResponse.class);
+        if (resp != null && resp.getStatusCode() == HttpStatus.OK && resp.getBody() != null) {
+            logger.info("Zona {} encontrada", zonaId);
+            return true;
+        }
+
+        logger.warn("Zona {} no encontrada (petición a {})", zonaId, url);
+        return false;
+    }
+
     // Helper genérico para llamadas GET que captura excepciones y registra errores
     private <T> ResponseEntity<T> safeGet(String url, Class<T> responseType) {
         try {
@@ -90,5 +110,16 @@ public class ExternalSecurityService implements IExternalSecurityService {
         public void setId(Integer id) { this.id = id; }
         public String getNombre() { return nombre; }
         public void setNombre(String nombre) { this.nombre = nombre; }
+    }
+    
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private static class ZonaResponse {
+        private Integer id;
+        private String name;
+        
+        public Integer getId() { return id; }
+        public void setId(Integer id) { this.id = id; }
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
     }
 }

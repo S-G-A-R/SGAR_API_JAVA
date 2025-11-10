@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +39,7 @@ public class FotoController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Búsqueda exitosa")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
     @GetMapping
     public ResponseEntity<Page<FotoSalidaDto>> buscar(
             @Parameter(description = "Información de paginación") Pageable pageable) {
@@ -50,6 +52,7 @@ public class FotoController {
         @ApiResponse(responseCode = "200", description = "Foto encontrada"),
         @ApiResponse(responseCode = "404", description = "Foto no encontrada")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
     @GetMapping("/{id}")
     public ResponseEntity<FotoSalidaDto> obtener(
             @Parameter(description = "ID de la foto") @PathVariable Integer id) {
@@ -66,6 +69,7 @@ public class FotoController {
         @ApiResponse(responseCode = "200", description = "Imagen encontrada"),
         @ApiResponse(responseCode = "404", description = "Foto no encontrada")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
     @GetMapping("/{id}/imagen")
     public ResponseEntity<byte[]> obtenerImagen(
             @Parameter(description = "ID de la foto") @PathVariable Integer id) {
@@ -84,6 +88,7 @@ public class FotoController {
         @ApiResponse(responseCode = "201", description = "Foto subida exitosamente"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<FotoSalidaDto> crear(
             @Parameter(description = "Archivo de imagen") @RequestParam("imagen") MultipartFile imagen,
@@ -114,6 +119,7 @@ public class FotoController {
         @ApiResponse(responseCode = "404", description = "Foto no encontrada"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<FotoSalidaDto> actualizar(
             @Parameter(description = "ID de la foto") @PathVariable Integer id,
@@ -142,6 +148,7 @@ public class FotoController {
         @ApiResponse(responseCode = "204", description = "Foto eliminada exitosamente"),
         @ApiResponse(responseCode = "404", description = "Foto no encontrada")
     })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(
             @Parameter(description = "ID de la foto") @PathVariable Integer id) {
