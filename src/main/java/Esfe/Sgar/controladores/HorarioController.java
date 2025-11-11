@@ -42,7 +42,7 @@ public class HorarioController {
     @GetMapping
     public ResponseEntity<Page<HorarioSalidaDto>> listar(
         @Parameter(description = "ID de la organización") @RequestParam(required = false) Integer organizacion,
-            @Parameter(description = "ID de la zona") @RequestParam(required = false) Integer zonaId,
+            @Parameter(description = "ID de la zona") @RequestParam(required = false) String zonaId,
             @Parameter(description = "Turno (1: mañana, 2: tarde, 3: noche)") @RequestParam(required = false) Byte turno,
             @Parameter(description = "Día de la semana") @RequestParam(required = false) String dia,
             @Parameter(description = "Hora de inicio (HH:mm)") @RequestParam(required = false) String inicio,
@@ -92,7 +92,7 @@ public class HorarioController {
         @Parameter(description = "Día de la semana") @RequestParam String dia,
         @Parameter(description = "ID de la organización") @RequestParam Integer idOrganizacion,
         @Parameter(description = "Turno (1: mañana, 2: tarde, 3: noche)") @RequestParam Byte turno,
-        @Parameter(description = "ID de la zona") @RequestParam Integer zonaId
+        @Parameter(description = "ID de la zona") @RequestParam String zonaId
     ) {
         try {
             HorarioGuardarDto dto = new HorarioGuardarDto();
@@ -129,7 +129,7 @@ public class HorarioController {
         @Parameter(description = "Día de la semana") @RequestParam String dia,
         @Parameter(description = "ID de la organización") @RequestParam Integer idOrganizacion,
         @Parameter(description = "Turno (1: mañana, 2: tarde, 3: noche)") @RequestParam Byte turno,
-        @Parameter(description = "ID de la zona") @RequestParam Integer zonaId
+        @Parameter(description = "ID de la zona") @RequestParam String zonaId
     ) {
         try {
             HorarioModificarDto dto = new HorarioModificarDto();

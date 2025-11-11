@@ -25,6 +25,6 @@ public class HorarioModificarDto {
     @NotNull(message = "El turno es requerido")
     private Byte turno;
 
-    @NotNull(message = "La zona es requerida")
-    private Integer zonaId;
+    @NotBlank(message = "La zona es requerida")
+    private String zonaId;
 }

@@ -12,5 +12,5 @@ public class HorarioSalidaDto {
     private String dia;
     private Integer idOrganizacion;
     private Byte turno;
-    private Integer zonaId;
+    private String zonaId;
 }

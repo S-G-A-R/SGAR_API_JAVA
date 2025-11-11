@@ -64,8 +64,8 @@ public class ExternalSecurityService implements IExternalSecurityService {
     }
 
     @Override
-    public boolean existeZona(Integer zonaId) {
-        if (zonaId == null || zonaId <= 0) {
+    public boolean existeZona(String zonaId) {
+        if (zonaId == null || zonaId.trim().isEmpty()) {
             logger.warn("ID de zona inválido: {}", zonaId);
             return false;
         }
@@ -114,11 +114,11 @@ public class ExternalSecurityService implements IExternalSecurityService {
     
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class ZonaResponse {
-        private Integer id;
+        private String id;
         private String name;
         
-        public Integer getId() { return id; }
-        public void setId(Integer id) { this.id = id; }
+        public String getId() { return id; }
+        public void setId(String id) { this.id = id; }
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
     }

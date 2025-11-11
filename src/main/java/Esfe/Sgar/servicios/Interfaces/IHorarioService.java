@@ -11,7 +11,7 @@ import java.time.LocalTime;
 public interface IHorarioService {
 
     Page<HorarioSalidaDto> filtrarHorarios(Integer organizacionId,
-                                           Integer zonaId,
+                                           String zonaId,
                                            Byte turno,
                                            String dia,
                                            LocalTime inicio,

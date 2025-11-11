@@ -26,7 +26,7 @@ public class Horario {
     private Byte turno;
 
     @Column(name = "ZonaId", nullable = false)
-    private Integer zonaId;
+    private String zonaId;
 
     public Integer getId() {
         return id;
@@ -69,10 +69,10 @@ public class Horario {
     }
 
    
-    public Integer getZonaId() {
+    public String getZonaId() {
         return zonaId;
     }
-    public void setZonaId(Integer zonaId) {
+    public void setZonaId(String zonaId) {
         this.zonaId = zonaId;
     }
 

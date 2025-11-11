@@ -29,7 +29,7 @@ public class HorarioService implements IHorarioService {
     }
 
     @Override
-    public Page<HorarioSalidaDto> filtrarHorarios(Integer organizacionId, Integer zonaId, Byte turno, String dia, LocalTime inicio, LocalTime fin, Pageable pageable) {
+    public Page<HorarioSalidaDto> filtrarHorarios(Integer organizacionId, String zonaId, Byte turno, String dia, LocalTime inicio, LocalTime fin, Pageable pageable) {
         return horarioRepository
                 .filtrarHorarios(organizacionId, zonaId, turno, dia, inicio, fin, pageable)
                 .map(this::toSalidaDto);

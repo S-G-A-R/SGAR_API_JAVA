@@ -29,7 +29,7 @@ public interface HorarioRepository extends JpaRepository<Horario, Integer> {
            "(:inicio IS NULL OR h.horaEntrada >= :inicio) AND " +
            "(:fin IS NULL OR h.horaSalida <= :fin)")
     Page<Horario> filtrarHorarios(@Param("organizacionId") Integer organizacionId,
-                                  @Param("zonaId") Integer zonaId,
+                                  @Param("zonaId") String zonaId,
                                   @Param("turno") Byte turno,
                                   @Param("dia") String dia,
                                   @Param("inicio") LocalTime inicio,

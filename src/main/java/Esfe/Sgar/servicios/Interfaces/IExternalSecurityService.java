@@ -20,5 +20,5 @@ public interface IExternalSecurityService {
      * @param zonaId ID de la zona a verificar
      * @return true si la zona existe
      */
-    boolean existeZona(Integer zonaId);
+    boolean existeZona(String zonaId);
 }
