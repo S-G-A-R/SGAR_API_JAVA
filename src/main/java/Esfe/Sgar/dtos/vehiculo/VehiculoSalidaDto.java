@@ -15,7 +15,6 @@ public class VehiculoSalidaDto {
     private String mecanico;
     private String taller;
     private Integer idOperador;
-    private String nombreOperador;
     private Integer idFoto;
     private Byte estado;
     private String descripcion;

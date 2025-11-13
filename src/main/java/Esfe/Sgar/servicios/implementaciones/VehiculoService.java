@@ -44,6 +44,7 @@ public class VehiculoService implements IVehiculoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<VehiculoSalidaDto> buscarConFiltros(String placa, String codigo, Integer marcaId, 
                                                      Integer tipoVehiculoId, Byte estado, String mecanico, 
                                                      Pageable pageable) {
@@ -52,6 +53,7 @@ public class VehiculoService implements IVehiculoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public VehiculoSalidaDto obtenerPorId(Integer id) {
         Optional<Vehiculo> opt = vehiculoRepository.findById(id);
         Vehiculo v = opt.orElseThrow(() -> new IllegalArgumentException("Vehículo no encontrado con id: " + id));
@@ -171,11 +173,13 @@ public class VehiculoService implements IVehiculoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existePorPlaca(String placa) {
         return vehiculoRepository.existsByPlaca(placa);
     }
     
     @Override
+    @Transactional(readOnly = true)
     public boolean existePorCodigo(String codigo) {
         return vehiculoRepository.existsByCodigo(codigo);
     }
