@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/vehiculos")
@@ -189,6 +190,30 @@ public class VehiculoController {
             @Parameter(description = "Código a verificar") @RequestParam String codigo) {
         boolean existe = vehiculoService.existePorCodigo(codigo);
         return ResponseEntity.ok(existe);
+    }
+
+    @Operation(summary = "Contar vehículos asignados a un operador")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Conteo realizado exitosamente")
+    })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
+    @GetMapping("/operador/{operadorId}/count")
+    public ResponseEntity<Long> contarVehiculosPorOperador(
+            @Parameter(description = "ID del operador") @PathVariable Integer operadorId) {
+        long cantidad = vehiculoService.contarVehiculosPorOperador(operadorId);
+        return ResponseEntity.ok(cantidad);
+    }
+
+    @Operation(summary = "Obtener vehículos asignados a un operador")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Vehículos obtenidos exitosamente")
+    })
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
+    @GetMapping("/operador/{operadorId}")
+    public ResponseEntity<List<VehiculoSalidaDto>> obtenerVehiculosPorOperador(
+            @Parameter(description = "ID del operador") @PathVariable Integer operadorId) {
+        List<VehiculoSalidaDto> vehiculos = vehiculoService.obtenerVehiculosPorOperador(operadorId);
+        return ResponseEntity.ok(vehiculos);
     }
 
 }

@@ -19,7 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class VehiculoService implements IVehiculoService {
@@ -182,6 +184,21 @@ public class VehiculoService implements IVehiculoService {
     @Transactional(readOnly = true)
     public boolean existePorCodigo(String codigo) {
         return vehiculoRepository.existsByCodigo(codigo);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long contarVehiculosPorOperador(Integer operadorId) {
+        return vehiculoRepository.countByOperadorId(operadorId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VehiculoSalidaDto> obtenerVehiculosPorOperador(Integer operadorId) {
+        return vehiculoRepository.findByOperadorId(operadorId)
+                .stream()
+                .map(this::toSalidaDto)
+                .collect(Collectors.toList());
     }
 
     private VehiculoSalidaDto toSalidaDto(Vehiculo v) {

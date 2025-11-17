@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
 
@@ -35,4 +37,10 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
     
     // Verificar si una foto está siendo usada por algún vehículo
     boolean existsByFotoId(Integer fotoId);
+    
+    // Contar vehículos asignados a un operador
+    long countByOperadorId(Integer operadorId);
+    
+    // Buscar vehículos por operador
+    List<Vehiculo> findByOperadorId(Integer operadorId);
 }
