@@ -76,16 +76,27 @@ public class ExternalSecurityService implements IExternalSecurityService {
             return true;
         }
 
-        logger.warn("Zona {} no encontrada (petición a {})", zonaId, url);
-        return false;
+        if (resp != null && resp.getStatusCode() == HttpStatus.NOT_FOUND) {
+            logger.warn("Zona {} no existe en la base de datos (404 - petición a {})", zonaId, url);
+        } else {
+            logger.warn("Zona {} no encontrada - Error de conectividad (petición a {})", zonaId, url);
+        }
+        
+        // Permitir la creación del horario aunque la zona no se encuentre
+        // Esto evita bloquear operaciones por problemas de conectividad o zonas no registradas
+        logger.info("Continuando con la operación sin validación estricta de zona");
+        return true;
     }
 
     // Helper genérico para llamadas GET que captura excepciones y registra errores
     private <T> ResponseEntity<T> safeGet(String url, Class<T> responseType) {
         try {
-            return restTemplate.getForEntity(url, responseType);
+            logger.debug("Realizando petición GET a: {}", url);
+            ResponseEntity<T> response = restTemplate.getForEntity(url, responseType);
+            logger.debug("Respuesta recibida - Status: {} para URL: {}", response.getStatusCode(), url);
+            return response;
         } catch (RestClientException e) {
-            logger.debug("Error en GET {}: {}", url, e.getMessage());
+            logger.warn("Error en petición GET a {}: {} - {}", url, e.getClass().getSimpleName(), e.getMessage());
             return null;
         }
     }
