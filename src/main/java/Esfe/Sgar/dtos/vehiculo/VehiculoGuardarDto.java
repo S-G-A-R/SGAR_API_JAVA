@@ -37,4 +37,5 @@ public class VehiculoGuardarDto {
 
     @Size(max = 500, message = "La descripción no debe exceder los 500 caracteres")
     private String descripcion;
+        private Integer organizacionId;
 }

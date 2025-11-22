@@ -45,6 +45,9 @@ public class Vehiculo {
     @JoinColumn(name = "IdFoto")
     private Foto foto;
 
+    @Column(name = "OrganizacionId")
+    private Integer organizacionId;
+
     public Integer getId() {
         return id;
     }
@@ -123,6 +126,14 @@ public class Vehiculo {
 
     public void setFoto(Foto foto) {
         this.foto = foto;
+    }
+
+    public Integer getOrganizacionId() {
+        return organizacionId;
+    }
+
+    public void setOrganizacionId(Integer organizacionId) {
+        this.organizacionId = organizacionId;
     }
 
         public Integer getOperadorId() {

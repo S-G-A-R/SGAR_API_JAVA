@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import Esfe.Sgar.config.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.util.List;
 
@@ -25,12 +30,15 @@ import java.util.List;
 @RequestMapping("/api/vehiculos")
 @Tag(name = "Vehículos", description = "API para la gestión de vehículos")
 public class VehiculoController {
+    private static final Logger logger = LoggerFactory.getLogger(VehiculoController.class);
 
     private final IVehiculoService vehiculoService;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public VehiculoController(IVehiculoService vehiculoService) {
+    public VehiculoController(IVehiculoService vehiculoService, JwtUtil jwtUtil) {
         this.vehiculoService = vehiculoService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Operation(summary = "Buscar vehículos con filtros opcionales y paginación")
@@ -75,18 +83,19 @@ public class VehiculoController {
     })
     @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @PostMapping
-    public ResponseEntity<VehiculoSalidaDto> crear(
-        @Parameter(description = "ID de la marca") @RequestParam(required = true) Integer idMarca,
-        @Parameter(description = "Placa del vehículo") @RequestParam(required = true) String placa,
-        @Parameter(description = "Código del vehículo") @RequestParam(required = true) String codigo,
-        @Parameter(description = "ID del tipo de vehículo") @RequestParam(required = true) Integer idTipoVehiculo,
-        @Parameter(description = "Mecánico") @RequestParam(required = true) String mecanico,
-        @Parameter(description = "Taller") @RequestParam(required = true) String taller,
-        @Parameter(description = "ID del operador") @RequestParam(required = false) Integer idOperador,
-        @Parameter(description = "ID de la foto") @RequestParam(required = false) Integer idFoto,
-        @Parameter(description = "Estado (1: Activo, 0: Inactivo)") @RequestParam(required = false) String estado,
-        @Parameter(description = "Descripción") @RequestParam(required = false) String descripcion
-    ) {
+        public ResponseEntity<VehiculoSalidaDto> crear(
+            @Parameter(description = "ID de la marca") @RequestParam(required = true) Integer idMarca,
+            @Parameter(description = "Placa del vehículo") @RequestParam(required = true) String placa,
+            @Parameter(description = "Código del vehículo") @RequestParam(required = true) String codigo,
+            @Parameter(description = "ID del tipo de vehículo") @RequestParam(required = true) Integer idTipoVehiculo,
+            @Parameter(description = "Mecánico") @RequestParam(required = true) String mecanico,
+            @Parameter(description = "Taller") @RequestParam(required = true) String taller,
+            @Parameter(description = "ID del operador") @RequestParam(required = false) Integer idOperador,
+            @Parameter(description = "ID de la foto") @RequestParam(required = false) Integer idFoto,
+            @Parameter(description = "Estado (1: Activo, 0: Inactivo)") @RequestParam(required = false) String estado,
+            @Parameter(description = "Descripción") @RequestParam(required = false) String descripcion,
+            HttpServletRequest request
+        ) {
         try {
             VehiculoGuardarDto dto = new VehiculoGuardarDto();
             dto.setIdMarca(idMarca);
@@ -99,6 +108,24 @@ public class VehiculoController {
             dto.setIdFoto(idFoto);
             dto.setEstado(estado != null ? Byte.parseByte(estado) : (byte) 1);
             dto.setDescripcion(descripcion);
+
+                // Extraer el token JWT del header Authorization
+                String authHeader = request.getHeader("Authorization");
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    String token = authHeader.substring(7);
+                    var claims = jwtUtil.extractAllClaims(token);
+                    logger.info("Claims extraídos del token JWT: {}", claims);
+                    Object orgIdObj = claims.get("nameid");
+                    if (orgIdObj instanceof Integer) {
+                        dto.setOrganizacionId((Integer) orgIdObj);
+                    } else if (orgIdObj instanceof String) {
+                        try {
+                            dto.setOrganizacionId(Integer.parseInt((String) orgIdObj));
+                        } catch (NumberFormatException e) {
+                            dto.setOrganizacionId(null);
+                        }
+                    }
+                }
             
             VehiculoSalidaDto creado = vehiculoService.crear(dto);
             HttpHeaders headers = new HttpHeaders();

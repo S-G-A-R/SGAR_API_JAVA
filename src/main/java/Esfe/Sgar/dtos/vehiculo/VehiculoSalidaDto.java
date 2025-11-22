@@ -18,4 +18,5 @@ public class VehiculoSalidaDto {
     private Integer idFoto;
     private Byte estado;
     private String descripcion;
+    private Integer organizacionId;
 }

@@ -67,10 +67,6 @@ public class VehiculoService implements IVehiculoService {
     public VehiculoSalidaDto crear(VehiculoGuardarDto dto) {
         if (dto == null) throw new IllegalArgumentException("El DTO no puede ser nulo");
         
-        // Validar que existe el operador
-        if (!externalSecurityService.existeOperador(dto.getIdOperador())) {
-            throw new IllegalArgumentException("El operador con ID " + dto.getIdOperador() + " no existe");
-        }
         
         // Validar placa única
         if (vehiculoRepository.existsByPlaca(dto.getPlaca())) {
@@ -100,6 +96,9 @@ public class VehiculoService implements IVehiculoService {
         v.setEstado(dto.getEstado());
         v.setDescripcion(dto.getDescripcion());
         v.setOperadorId(dto.getIdOperador());
+
+            // Guardar el id de organización si viene en el DTO
+            v.setOrganizacionId(dto.getOrganizacionId());
         
         // Asignar foto si se proporciona
         if (dto.getIdFoto() != null) {
@@ -216,12 +215,11 @@ public class VehiculoService implements IVehiculoService {
         out.setIdOperador(v.getOperadorId());
         out.setEstado(v.getEstado());
         out.setDescripcion(v.getDescripcion());
-        
-            // Mapear información de la foto si existe
-            if (v.getFoto() != null) {
-                out.setIdFoto(v.getFoto().getId());
-            }
-        
+        out.setOrganizacionId(v.getOrganizacionId());
+        // Mapear información de la foto si existe
+        if (v.getFoto() != null) {
+            out.setIdFoto(v.getFoto().getId());
+        }
         return out;
     }
 }
