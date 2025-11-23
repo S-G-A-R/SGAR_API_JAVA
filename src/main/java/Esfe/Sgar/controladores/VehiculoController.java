@@ -59,6 +59,39 @@ public class VehiculoController {
         return ResponseEntity.ok(page);
     }
 
+        @Operation(summary = "Listar vehículos de la organización autenticada")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Vehículos encontrados"),
+        @ApiResponse(responseCode = "401", description = "No autorizado")
+    })
+    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion')")
+    @GetMapping("/mis-autos")
+    public ResponseEntity<List<VehiculoSalidaDto>> autosDeOrganizacion(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String token = authHeader.substring(7);
+        var claims = jwtUtil.extractAllClaims(token);
+        Object rolObj = claims.get("role");
+        Object orgIdObj = claims.get("nameid");
+        if (rolObj == null || !rolObj.toString().equalsIgnoreCase("Organizacion") || orgIdObj == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Integer organizacionId = null;
+        if (orgIdObj instanceof Integer) {
+            organizacionId = (Integer) orgIdObj;
+        } else if (orgIdObj instanceof String) {
+            try {
+                organizacionId = Integer.parseInt((String) orgIdObj);
+            } catch (NumberFormatException e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
+        List<VehiculoSalidaDto> autos = vehiculoService.obtenerPorOrganizacion(organizacionId);
+        return ResponseEntity.ok(autos);
+    }
+    
     @Operation(summary = "Obtener un vehículo por ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Vehículo encontrado"),

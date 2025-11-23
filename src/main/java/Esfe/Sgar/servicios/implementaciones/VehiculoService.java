@@ -1,3 +1,4 @@
+    
 package Esfe.Sgar.servicios.implementaciones;
 
 import Esfe.Sgar.dtos.vehiculo.VehiculoGuardarDto;
@@ -62,6 +63,15 @@ public class VehiculoService implements IVehiculoService {
         return toSalidaDto(v);
     }
 
+@Override
+    @Transactional(readOnly = true)
+    public List<VehiculoSalidaDto> obtenerPorOrganizacion(Integer organizacionId) {
+        return vehiculoRepository.findByOrganizacionId(organizacionId)
+                .stream()
+                .map(this::toSalidaDto)
+                .collect(Collectors.toList());
+    }
+    
     @Override
     @Transactional
     public VehiculoSalidaDto crear(VehiculoGuardarDto dto) {

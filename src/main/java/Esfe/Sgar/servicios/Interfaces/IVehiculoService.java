@@ -1,3 +1,4 @@
+  
 package Esfe.Sgar.servicios.Interfaces;
 
 import Esfe.Sgar.dtos.vehiculo.VehiculoGuardarDto;
@@ -10,6 +11,9 @@ import java.util.List;
 
 public interface IVehiculoService {
 
+      // Obtener vehículos por organización
+    List<VehiculoSalidaDto> obtenerPorOrganizacion(Integer organizacionId);
+    
     Page<VehiculoSalidaDto> buscarConFiltros(String placa, String codigo, Integer marcaId, 
                                               Integer tipoVehiculoId, Byte estado, String mecanico, 
                                               Pageable pageable);

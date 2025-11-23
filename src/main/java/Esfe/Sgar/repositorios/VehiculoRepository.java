@@ -1,3 +1,4 @@
+    // Buscar vehículos por organización
 package Esfe.Sgar.repositorios;
 
 import Esfe.Sgar.modelos.Vehiculo;
@@ -31,7 +32,9 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Integer> {
 
     // Verificar existencia por placa
     boolean existsByPlaca(String placa);
-    
+
+    List<Vehiculo> findByOrganizacionId(Integer organizacionId);
+
     // Verificar existencia por código
     boolean existsByCodigo(String codigo);
     
