@@ -53,10 +53,8 @@ public class HorarioService implements IHorarioService {
             throw new IllegalArgumentException("La hora de entrada debe ser anterior a la hora de salida");
         }
         
-        // Validar que existe la organización
-        if (!externalSecurityService.existeOrganizacion(dto.getIdOrganizacion())) {
-            throw new IllegalArgumentException("La organización con ID " + dto.getIdOrganizacion() + " no existe");
-        }
+            // Ya no se verifica la existencia de la organización en API de seguridad
+            // Se trata como un campo normal
         
         // Validar que existe la zona
         if (!externalSecurityService.existeZona(dto.getZonaId())) {
