@@ -19,21 +19,21 @@ public class OrganizacionTipoBasuraController {
     }
 
     // Asignar una clasificación de basura a una organización
-    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
+    // @PreAuthorize removido para acceso libre
     @PostMapping("/asignar")
     public String asignarTipoBasura(@RequestBody AsignarTiposBasuraDto dto) {
         return service.asignarTipoBasura(dto);
     }
 
     // Obtener IDs de organizaciones por tipo de basura (endpoint corto)
-    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
+    // @PreAuthorize removido para acceso libre
     @GetMapping("/orgs/{idTipo}")
     public List<Integer> obtenerOrganizacionesPorTipo(@PathVariable Integer idTipo) {
         return service.obtenerOrganizacionesPorTipoBasura(idTipo);
     }
 
     // Obtener nombres de organizaciones por tipo de basura (endpoint corto)
-    @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('ORGANIZACION')")
+    // @PreAuthorize removido para acceso libre
     @GetMapping("/orgs-nombre/{idTipo}")
     public List<OrganizacionDto> obtenerOrganizacionesPorTipoConNombre(
             @PathVariable Integer idTipo,

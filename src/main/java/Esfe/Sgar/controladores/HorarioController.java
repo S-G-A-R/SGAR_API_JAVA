@@ -38,7 +38,7 @@ public class HorarioController {
         @ApiResponse(responseCode = "200", description = "Horarios encontrados"),
         @ApiResponse(responseCode = "400", description = "Parámetros de tiempo inválidos")
     })
-    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador', 'ROLE_Ciudadano')")
     @GetMapping
     public ResponseEntity<Page<HorarioSalidaDto>> listar(
         @Parameter(description = "ID de la organización") @RequestParam(required = false) Integer organizacion,
@@ -67,7 +67,7 @@ public class HorarioController {
         @ApiResponse(responseCode = "200", description = "Horario encontrado"),
         @ApiResponse(responseCode = "404", description = "Horario no encontrado")
     })
-    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
+    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador', 'ROLE_Ciudadano')")
     @GetMapping("/{id}")
     public ResponseEntity<HorarioSalidaDto> obtener(
             @Parameter(description = "ID del horario") @PathVariable Integer id) {

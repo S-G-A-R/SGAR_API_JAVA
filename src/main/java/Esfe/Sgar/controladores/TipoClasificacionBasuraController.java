@@ -37,7 +37,7 @@ public class TipoClasificacionBasuraController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Búsqueda exitosa")
     })
-    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
+    // @PreAuthorize removido para acceso libre (GET)
     @GetMapping
     public ResponseEntity<Page<TipoClasificacionBasuraSalidaDto>> buscar(
             @Parameter(description = "Nombre del tipo (búsqueda parcial, opcional)") 
@@ -53,7 +53,7 @@ public class TipoClasificacionBasuraController {
         @ApiResponse(responseCode = "200", description = "Tipo encontrado"),
         @ApiResponse(responseCode = "404", description = "Tipo no encontrado")
     })
-    @PreAuthorize("hasAnyAuthority('ROLE_Operador', 'ROLE_Organizacion', 'ROLE_Administrador')")
+    // @PreAuthorize removido para acceso libre (GET)
     @GetMapping("/{id}")
     public ResponseEntity<TipoClasificacionBasuraSalidaDto> obtener(
             @Parameter(description = "ID del tipo de clasificación") 
@@ -71,7 +71,7 @@ public class TipoClasificacionBasuraController {
         @ApiResponse(responseCode = "201", description = "Tipo creado exitosamente"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o nombre duplicado")
     })
-    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
+    @PreAuthorize ("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @PostMapping
     public ResponseEntity<TipoClasificacionBasuraSalidaDto> crear(
             @Valid @RequestBody TipoClasificacionBasuraGuardarDto dto) {
@@ -91,7 +91,7 @@ public class TipoClasificacionBasuraController {
         @ApiResponse(responseCode = "404", description = "Tipo no encontrado"),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o nombre duplicado")
     })
-    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
+    @PreAuthorize ("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @PutMapping("/{id}")
     public ResponseEntity<TipoClasificacionBasuraSalidaDto> actualizar(
             @Parameter(description = "ID del tipo de clasificación") 
@@ -114,7 +114,7 @@ public class TipoClasificacionBasuraController {
         @ApiResponse(responseCode = "404", description = "Tipo no encontrado"),
         @ApiResponse(responseCode = "409", description = "No se puede eliminar, existen registros relacionados")
     })
-    @PreAuthorize("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
+    @PreAuthorize ("hasAnyAuthority('ROLE_Organizacion', 'ROLE_Administrador')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(
             @Parameter(description = "ID del tipo de clasificación") 

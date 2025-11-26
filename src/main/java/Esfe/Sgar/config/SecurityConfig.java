@@ -28,15 +28,17 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/v3/api-docs/**", 
-                               "/swagger-ui/**", 
-                               "/swagger-ui.html",
-                               "/webjars/**",
-                               "/swagger-resources/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated())
+                .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/v3/api-docs/**", 
+                                   "/swagger-ui/**", 
+                                   "/swagger-ui.html",
+                                   "/webjars/**",
+                                   "/swagger-resources/**",
+                                "/api/organizacion-tipo-basura/**",
+                                "/api/tipos-clasificacion-basura/**") // Added line for permitAll GET
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
